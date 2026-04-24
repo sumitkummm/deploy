@@ -17,6 +17,8 @@ const sections = [
 ];
 
 const Footer = () => {
+  const siteName = localStorage.getItem('admin_site_name') || 'Physics Wallah';
+
   return (
     <footer className="bg-tertiary-6 pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -25,10 +27,10 @@ const Footer = () => {
             <div className="flex items-center gap-3 mb-6">
               <img 
                 src="https://static.pw.live/5eb393ee95fab7468a79d189/GLOBAL_CMS/537952c6-cac8-4284-83a1-4a81818d3ccc.webp" 
-                alt="Physics Wallah" 
+                alt={siteName} 
                 className="h-10 w-auto"
               />
-              <span className="text-2xl font-bold text-headings">Physics Wallah</span>
+              <span className="text-2xl font-bold text-headings">{siteName}</span>
             </div>
             <p className="text-body-2 text-sm md:text-base mb-10 max-w-md">
               We understand that every student has unique needs and abilities, that’s why our curriculum is designed to adapt to your needs and help you grow!
@@ -78,7 +80,7 @@ const Footer = () => {
             <div className="w-px h-4 bg-stroke-light" />
             <a href="#" className="text-sm font-medium text-body-2 hover:text-headings">Terms of use</a>
           </div>
-          <p className="text-sm text-headings">Copyright © 2026 Physicswallah Limited All rights reserved.</p>
+          <p className="text-sm text-headings">Copyright © 2026 {siteName} Limited All rights reserved.</p>
         </div>
       </div>
     </footer>

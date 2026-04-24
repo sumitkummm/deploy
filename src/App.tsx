@@ -21,6 +21,7 @@ import AppBanner from './components/AppBanner';
 import YouTubeSection from './components/YouTubeSection';
 import Footer from './components/Footer';
 import FloatingAction from './components/FloatingAction';
+import AdminPanel from './components/AdminPanel';
 import { getUserInfo, getUserProfileInfo } from './services/api';
 
 export default function App() {
@@ -29,12 +30,32 @@ export default function App() {
   const [profileInfo, setProfileInfo] = useState<any>(null);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoginRequired, setIsLoginRequired] = useState(true);
 
   useEffect(() => {
+    // Check if admin has disabled login requirement
+    const adminLoginSetting = localStorage.getItem('admin_login_enabled');
+    if (adminLoginSetting === 'false') {
+      setIsLoginRequired(false);
+      // If login is not required, we simulate authenticated state for navigation
+      setIsAuthenticated(true);
+      // Provide a guest user if none exists
+      if (!localStorage.getItem('pw_user')) {
+        setUser({
+          name: 'Guest User',
+          firstName: 'Guest',
+          isGuest: true,
+          image: 'https://static.pw.live/files/boy_20250107145242.png'
+        });
+      }
+    }
+
     const token = localStorage.getItem('pw_token');
     const storedUser = localStorage.getItem('pw_user');
     
-    setIsAuthenticated(!!token);
+    if (token) {
+      setIsAuthenticated(true);
+    }
     
     if (storedUser) {
       try {
@@ -77,36 +98,43 @@ export default function App() {
     <div className="min-h-screen bg-tertiary-6">
       <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
       
-      {isAuthenticated ? (
-        <div className="pt-[60px] md:pt-[64px] lg:pl-[240px]">
-          <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-          <main className="min-h-[calc(100vh-64px)]">
-            <Routes>
-              <Route path="/study" element={<UserDashboard />} />
-              <Route path="/batches" element={<BatchesSection />} />
-              <Route path="/power-batch" element={<PowerBatch />} />
-              <Route path="/test-series" element={<TestSeriesSection />} />
-              <Route path="/books" element={<BooksSection />} />
-              <Route path="/pi" element={<PISection />} />
-              <Route path="/library" element={<LibrarySection />} />
-              <Route path="/profile" element={<ProfileSection user={user} profileInfo={profileInfo} />} />
-              <Route path="/" element={<UserDashboard />} />
-            </Routes>
-          </main>
-        </div>
-      ) : (
-        <main className="pt-[60px] md:pt-[64px]">
-          <BannerCarousel />
-          <Hero />
-          <StatsSection />
-          <ExamCategories />
-          <OfflineCentres />
-          <ResultsSection />
-          <PlatformStats />
-          <AppBanner />
-          <YouTubeSection />
+      <div className={isAuthenticated ? "pt-[60px] md:pt-[64px] lg:pl-[240px]" : "pt-[60px] md:pt-[64px]"}>
+        {isAuthenticated && <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />}
+        <main className={isAuthenticated ? "min-h-[calc(100vh-64px)]" : ""}>
+          <Routes>
+            {/* Hidden Admin Route */}
+            <Route path="/xyzabc123" element={<AdminPanel />} />
+
+            {isAuthenticated ? (
+              <>
+                <Route path="/study" element={<UserDashboard />} />
+                <Route path="/batches" element={<BatchesSection />} />
+                <Route path="/power-batch" element={<PowerBatch />} />
+                <Route path="/test-series" element={<TestSeriesSection />} />
+                <Route path="/books" element={<BooksSection />} />
+                <Route path="/pi" element={<PISection />} />
+                <Route path="/library" element={<LibrarySection />} />
+                <Route path="/profile" element={<ProfileSection user={user} profileInfo={profileInfo} />} />
+                <Route path="/" element={<Navigate to="/study" replace />} />
+              </>
+            ) : (
+              <Route path="*" element={
+                <>
+                  <BannerCarousel />
+                  <Hero />
+                  <StatsSection />
+                  <ExamCategories />
+                  <OfflineCentres />
+                  <ResultsSection />
+                  <PlatformStats />
+                  <AppBanner />
+                  <YouTubeSection />
+                </>
+              } />
+            )}
+          </Routes>
         </main>
-      )}
+      </div>
 
       {!isAuthenticated && <Footer />}
       <FloatingAction />

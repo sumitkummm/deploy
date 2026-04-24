@@ -51,45 +51,58 @@ import { batches_35 } from './batches_data_35';
 import { batches_36 } from './batches_data_36';
 import { batches_37 } from './batches_data_37';
 
-export const customBatches: Batch[] = [
-  ...batches_1,
-  ...batches_2,
-  ...batches_3,
-  ...batches_4,
-  ...batches_5,
-  ...batches_6,
-  ...batches_7,
-  ...batches_8,
-  ...batches_9,
-  ...batches_10,
-  ...batches_11,
-  ...batches_12,
-  ...batches_13,
-  ...batches_14,
-  ...batches_15,
-  ...batches_16,
-  ...batches_17,
-  ...batches_18,
-  ...batches_19,
-  ...batches_20,
-  ...batches_21,
-  ...batches_22,
-  ...batches_23,
-  ...batches_24,
-  ...batches_25,
-  ...batches_26,
-  ...batches_27,
-  ...batches_28,
-  ...batches_29,
-  ...batches_30,
-  ...batches_31,
-  ...batches_32,
-  ...batches_33,
-  ...batches_34,
-  ...batches_35,
-  ...batches_36,
-  ...batches_37
-];
+export const getCustomBatches = (): Batch[] => {
+  const storedBatches = localStorage.getItem('admin_custom_batches');
+  if (storedBatches) {
+    try {
+      return JSON.parse(storedBatches);
+    } catch (e) {
+      console.error("Failed to parse custom batches", e);
+    }
+  }
+
+  return [
+    ...batches_1,
+    ...batches_2,
+    ...batches_3,
+    ...batches_4,
+    ...batches_5,
+    ...batches_6,
+    ...batches_7,
+    ...batches_8,
+    ...batches_9,
+    ...batches_10,
+    ...batches_11,
+    ...batches_12,
+    ...batches_13,
+    ...batches_14,
+    ...batches_15,
+    ...batches_16,
+    ...batches_17,
+    ...batches_18,
+    ...batches_19,
+    ...batches_20,
+    ...batches_21,
+    ...batches_22,
+    ...batches_23,
+    ...batches_24,
+    ...batches_25,
+    ...batches_26,
+    ...batches_27,
+    ...batches_28,
+    ...batches_29,
+    ...batches_30,
+    ...batches_31,
+    ...batches_32,
+    ...batches_33,
+    ...batches_34,
+    ...batches_35,
+    ...batches_36,
+    ...batches_37
+  ];
+};
+
+export const customBatches: Batch[] = getCustomBatches();
 
 export const batchDetailsFallback: Record<string, any> = {};
 

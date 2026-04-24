@@ -49,67 +49,6 @@ import {
 } from '../services/api';
 import BatchExplorer from './BatchExplorer';
 
-const DebugAPIIntegration = () => {
-  const [debugData, setDebugData] = useState<any>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAll = async () => {
-      const token = localStorage.getItem('pw_token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      
-      const p1 = getScheduleDetails(token, '698eb0cbc33fcf7fe6c73249', '5f709c26796f410011b7b80b', '69e88b743ef111fc87bdf113');
-      const p1_5 = getScheduleThreeDModel(token, '698eb0cbc33fcf7fe6c73249', 'pralayam-tg-eapcet-crash-course-2026-595989', '69e88b743ef111fc87bdf113');
-      const p2 = getStudyPageWidgets(token, '690e0745904eeba494a0ec81', '698eb0cbc33fcf7fe6c73249');
-      const p3 = getHomepageWidgets(token, '634fd2463ce3d7001c50798a', 'Free');
-      const p4 = getUserDetailsList(token, ['68dfa36305911a7d5944eb74', '68caff879bc0cfb73cbaec34']);
-      const p5 = getMoEngageCampaigns(token, '2e9e7fba-fb4e-42a2-ba00-5ee5815571ff');
-      const p6 = getNebulaCohort(token, '634fd2463ce3d7001c50798a');
-      const p7 = getAIPersonalisationStats(token, '690e06a4e99e7aac3057df5b', 'Vernacular Telugu', '12+', 'SCHOOL_PREPARATION');
-
-      try {
-        const results = await Promise.allSettled([p1, p1_5, p2, p3, p4, p5, p6, p7]);
-        setDebugData({
-          scheduleDetails: results[0].status === 'fulfilled' ? results[0].value : 'Error',
-          scheduleThreeDModel: results[1].status === 'fulfilled' ? results[1].value : 'Error',
-          studyPageWidgets: results[2].status === 'fulfilled' ? results[2].value : 'Error',
-          homepageWidgets: results[3].status === 'fulfilled' ? results[3].value : 'Error',
-          userDetailsList: results[4].status === 'fulfilled' ? results[4].value : 'Error',
-          moEngageCampaigns: results[5].status === 'fulfilled' ? results[5].value : 'Error',
-          nebulaCohort: results[6].status === 'fulfilled' ? results[6].value : 'Error',
-          aiPersonalisationStats: results[7].status === 'fulfilled' ? results[7].value : 'Error',
-        });
-      } catch (e) {
-        setDebugData({ error: 'Failed to execute one or more APIs', msg: String(e) });
-      }
-      setLoading(false);
-    };
-
-    fetchAll();
-  }, []);
-
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-stroke-light p-6 mt-6 overflow-hidden max-w-full">
-      <h3 className="font-bold text-lg mb-4 flex justify-between items-center text-headings">
-        <span className="flex items-center gap-2">
-          <Target className="w-5 h-5 text-primary" />
-          API Live Test Viewer
-        </span>
-        {loading && <span className="text-primary text-sm font-bold flex items-center gap-2"><div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"/> Fetching...</span>}
-      </h3>
-      <div className="max-h-[500px] overflow-y-auto bg-[#1A1A1A] rounded-lg p-5 font-mono text-xs text-[#00FF41]">
-        <pre className="whitespace-pre-wrap break-words">{JSON.stringify(debugData, null, 2)}</pre>
-      </div>
-      <p className="mt-3 text-[10px] text-body-2 bg-yellow-50 p-2 rounded text-yellow-800">
-        Note: If responses are null, verify your account access token. We have implemented all requested endpoints so you can verify their real JSON structure here before we build standard visual components for them.
-      </p>
-    </div>
-  );
-};
-
 const UserDashboard = () => {
   const [streakData, setStreakData] = useState<any>(null);
   const [streakMsg, setStreakMsg] = useState<string>('');
@@ -660,7 +599,9 @@ const UserDashboard = () => {
             {/* Dynamic PW Widgets */}
             {widgets && widgets.length > 0 && (
                <section className="space-y-6">
-                  {widgets.map((widget, widx) => (
+                  {widgets
+                    .filter(w => w && w.data && w.data.length > 0 && !w.title?.startsWith('<!'))
+                    .map((widget, widx) => (
                      <div key={widx} className="bg-white rounded-2xl border border-stroke-light p-5 lg:p-6 shadow-sm overflow-hidden">
                         <div className="flex items-center justify-between mb-4">
                            <h3 className="text-lg font-extrabold text-headings">{widget.title || widget.widgetType || "Study Resources"}</h3>
@@ -683,30 +624,27 @@ const UserDashboard = () => {
                                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                           referrerPolicy="no-referrer"
                                           alt=""
-                                       />
-                                    ) : (
-                                       <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10 text-primary/40">
-                                          <Bookmark className="w-8 h-8 opacity-50" />
-                                       </div>
-                                    )}
-                                    {item.isPremium && (
-                                       <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-yellow-400 text-yellow-900 text-[8px] font-black rounded uppercase">Pro</div>
-                                    )}
-                                 </div>
-                                 <h4 className="font-bold text-headings text-[11px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                                    {item.title || item.name || item.topic || "Resource"}
-                                 </h4>
-                                 {item.subtitle && <p className="text-[9px] text-body-2 truncate">{item.subtitle}</p>}
-                              </div>
-                           ))}
-                           {(!widget.data || widget.data.length === 0) && (
-                              <p className="text-xs text-body-2 italic py-4">No data available for this widget right now.</p>
-                           )}
-                        </div>
-                     </div>
-                  ))}
-               </section>
-            )}
+                                        />
+                                   ) : (
+                                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 to-primary/10 text-primary/40">
+                                         <Bookmark className="w-8 h-8 opacity-50" />
+                                      </div>
+                                   )}
+                                   {item.isPremium && (
+                                      <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-yellow-400 text-yellow-900 text-[8px] font-black rounded uppercase">Pro</div>
+                                   )}
+                                </div>
+                                <h4 className="font-bold text-headings text-[11px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                                   {item.title || item.name || item.topic || "Resource"}
+                                </h4>
+                                {item.subtitle && <p className="text-[9px] text-body-2 truncate">{item.subtitle}</p>}
+                             </div>
+                          ))}
+                       </div>
+                    </div>
+                 ))}
+              </section>
+           )}
 
             {/* My Study Zone */}
             <section>
@@ -740,7 +678,7 @@ const UserDashboard = () => {
                </div>
             </section>
 
-            <DebugAPIIntegration />
+
 
             <div className="pt-8 text-center space-y-4 pb-20">
                <h2 className="text-3xl font-black text-headings tracking-tight">Padhlo chahe kahi se, <br/> Manzil milegi yahi se!</h2>
