@@ -8,11 +8,26 @@ This contains everything you need to run your app locally.
 
 View your app in AI Studio: https://ai.studio/apps/7ed77867-c04b-4fe3-8518-80a80d5da993
 
-## Cloudflare Deployment
+## Deployment
 
-This project is ready to be deployed to **Cloudflare Pages**.
+This project is ready to be deployed to **Vercel** or **Cloudflare Pages**.
 
-### Steps to Deploy:
+### Deploying to Vercel (Recommended)
+
+1.  **Push to GitHub**: Push your code to a GitHub repository.
+2.  **Import to Vercel**: 
+    - Log in to your [Vercel Dashboard](https://vercel.com).
+    - Click **Add New** > **Project**.
+    - Import your repository.
+3.  **Configure Build Settings**:
+    - Vercel automatically detects **Vite**.
+    - Build Command: `npm run build`
+    - Output Directory: `dist`
+4.  **Add Environment Variables**:
+    - Add `GEMINI_API_KEY` with your Google Gemini API key.
+5.  **Deploy**: Click **Deploy**.
+
+### Deploying to Cloudflare Pages
 
 1.  **Push to GitHub**: Push your code to a GitHub repository.
 2.  **Connect to Cloudflare**: 
